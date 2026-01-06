@@ -8,7 +8,7 @@ from models.user_model import *
 
 security = HTTPBearer()
 
-auth_router = APIRouter(prefix="/api/auth", tags=["user"])
+user_controller = APIRouter(prefix="/auth", tags=["user"])
 
 def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(security)):
     payload = verify_token(credentials.credentials)
@@ -16,10 +16,7 @@ def get_current_user(credentials: HTTPAuthorizationCredentials = Depends(securit
         raise HTTPException(status_code=401, detail="Invalid token")
     return payload
 
-
-# ============= GET PROFILE (PROTECTED) =============
-
-@auth_router.get("/profile")
+@user_controller.get("/profile")
 def get_profile(current_user: dict = Depends(get_current_user), db: Session = Depends(get_db)):
     user = db.query(User).filter(User.id == current_user["user_id"]).first()
     
@@ -36,8 +33,8 @@ def get_profile(current_user: dict = Depends(get_current_user), db: Session = De
         "last_login": str(user.last_login) if user.last_login else None
     }
 
-# ============= VERIFY TOKEN =============
-@auth_router.get("/verify-token")
+
+@user_controller.get("/verify-token")
 def verify_token_endpoint(current_user: dict = Depends(get_current_user)):
     return {
         "success": True,

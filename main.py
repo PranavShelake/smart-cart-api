@@ -27,7 +27,7 @@ Base.metadata.create_all(bind=engine)
 
 # Include Routers
 app.include_router(auth_controller)
-# app.include_router(user_controller)
+app.include_router(user_controller)
 
 # CORS
 origins = [
