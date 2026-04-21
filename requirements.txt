@@ -1,10 +1,28 @@
-fastapi==0.104.1
-uvicorn[standard]==0.24.0
-sqlalchemy==2.0.20
-pydantic==2.9.2
-pydantic-settings==2.4.0
-python-jose==3.3.0
-python-multipart==0.0.6
-email-validator==2.1.0
-python-dotenv==1.0.0
-passlib[bcrypt]==1.7.4
+# ============================================================
+# Smart Cart — Backend Dependencies
+# ============================================================
+
+# Core Framework
+fastapi==0.111.0
+uvicorn[standard]==0.29.0          # ASGI server with websocket + http2 support
+
+# Database
+asyncpg==0.29.0                    # Async PostgreSQL driver (much faster than psycopg2 for async)
+
+# Authentication & Security
+passlib[bcrypt]==1.7.4             # bcrypt hashing — industry standard
+python-jose[cryptography]==3.3.0   # JWT encode/decode with RSA/HMAC support
+python-multipart==0.0.9            # Required for OAuth2PasswordRequestForm
+
+# Validation & Settings
+pydantic==2.7.1                    # Data validation (v2 — faster, stricter)
+pydantic[email]==2.7.1             # Email validation via email-validator
+pydantic-settings==2.2.1           # Load config from .env files
+
+# Utilities
+python-dateutil==2.9.0             # Date parsing utilities
+
+# Development
+pytest==8.2.0                      # Testing framework
+pytest-asyncio==0.23.6             # Async test support
+httpx==0.27.0                      # Async HTTP client for testing FastAPI
