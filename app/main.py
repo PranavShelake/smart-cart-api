@@ -29,10 +29,8 @@ from app.modules.auth.router import router as auth_router
 from app.modules.users.router import router as users_router
 from app.modules.categories.router import router as categories_router
 from app.modules.products.router import router as products_router
-# Future modules — uncomment as you build them:
-# from app.modules.products.router import router as products_router
-# from app.modules.cart.router import router as cart_router
-# from app.modules.orders.router import router as orders_router
+from app.modules.cart.router import router as cart_router
+from app.modules.orders.router import router as orders_router
 
 # ── Logging Setup ─────────────────────────────────────────
 logging.basicConfig(
@@ -171,9 +169,8 @@ app.include_router(auth_router,  prefix=settings.API_V1_PREFIX)
 app.include_router(users_router,      prefix=settings.API_V1_PREFIX)
 app.include_router(categories_router, prefix=settings.API_V1_PREFIX)
 app.include_router(products_router,   prefix=settings.API_V1_PREFIX)
-# app.include_router(products_router, prefix=settings.API_V1_PREFIX)
-# app.include_router(cart_router,     prefix=settings.API_V1_PREFIX)
-# app.include_router(orders_router,   prefix=settings.API_V1_PREFIX)
+app.include_router(cart_router,     prefix=settings.API_V1_PREFIX)
+app.include_router(orders_router,   prefix=settings.API_V1_PREFIX)
 
 
 # ── Health Check ─────────────────────────────────────────
