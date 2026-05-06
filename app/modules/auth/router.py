@@ -122,33 +122,19 @@ async def register(
         status_code=201,
     )
 
-
-@router.post(
-    "/login",
-    summary="Login and get access token",
-    description="Authenticate with email and password. Returns access token in body, sets refresh token in HTTP-only cookie.",
-)
+@router.post("/login")
 async def login(
     data: LoginRequest,
     request: Request,
     response: Response,
     db: asyncpg.Connection = Depends(get_db),
 ):
-    """
-    POST /api/v1/auth/login
-
-    Body: { email, password }
-    Returns: { access_token, token_type, expires_in, user }
-    Sets Cookie: refresh_token (HTTP-only)
-    """
     ip, device_info = _get_client_info(request)
     service = AuthService(db)
     result = await service.login(data, ip_address=ip, device_info=device_info)
 
-    # Set refresh token in HTTP-only cookie — NOT in the response body
-    _set_refresh_cookie(response, result["refresh_token"])
-
-    return success_response(
+    # ✅ Build the JSONResponse first, then set cookie ON it directly
+    json_response = success_response(
         data={
             "access_token": result["access_token"],
             "token_type": "bearer",
@@ -157,42 +143,25 @@ async def login(
         },
         message="Login successful.",
     )
+    _set_refresh_cookie(json_response, result["refresh_token"])
+    return json_response
 
 
-@router.post(
-    "/refresh",
-    summary="Refresh access token",
-    description="Use the HTTP-only refresh token cookie to get a new access token. Also rotates the refresh token.",
-)
+@router.post("/refresh")
 async def refresh_token(
     request: Request,
     response: Response,
     db: asyncpg.Connection = Depends(get_db),
 ):
-    """
-    POST /api/v1/auth/refresh
-
-    Reads: refresh_token cookie (HTTP-only — sent automatically by browser)
-    Returns: { access_token, token_type, expires_in }
-    Sets Cookie: new refresh_token (HTTP-only, rotation)
-
-    WHY no request body?
-        The refresh token is in the HTTP-only cookie.
-        The browser sends it automatically on any request to /api/v1/auth/*.
-        Frontend never reads or handles the refresh token directly.
-    """
     raw_refresh_token = request.cookies.get(REFRESH_COOKIE_NAME)
-
     if not raw_refresh_token:
         raise RefreshTokenMissingException()
 
     service = AuthService(db)
     result = await service.refresh_access_token(raw_refresh_token)
 
-    # Set new refresh token (rotation — old one is now revoked in DB)
-    _set_refresh_cookie(response, result["refresh_token"])
-
-    return success_response(
+    # ✅ Same fix
+    json_response = success_response(
         data={
             "access_token": result["access_token"],
             "token_type": "bearer",
@@ -200,62 +169,40 @@ async def refresh_token(
         },
         message="Token refreshed successfully.",
     )
+    _set_refresh_cookie(json_response, result["refresh_token"])
+    return json_response
 
-
-@router.post(
-    "/logout",
-    summary="Logout from current device",
-    description="Revokes the current refresh token and clears the cookie.",
-)
+@router.post("/logout")
 async def logout(
     request: Request,
     response: Response,
     db: asyncpg.Connection = Depends(get_db),
     current_user: TokenData = Depends(get_current_user),
 ):
-    """
-    POST /api/v1/auth/logout
-
-    Requires: Authorization: Bearer <access_token>
-    Reads: refresh_token cookie
-    Returns: { message }
-    Clears Cookie: refresh_token
-    """
     raw_refresh_token = request.cookies.get(REFRESH_COOKIE_NAME)
-
     if raw_refresh_token:
         service = AuthService(db)
         await service.logout(raw_refresh_token)
 
-    _clear_refresh_cookie(response)
+    # ✅ Same fix
+    json_response = success_response(message="Logged out successfully.")
+    _clear_refresh_cookie(json_response)
+    return json_response
 
-    return success_response(message="Logged out successfully.")
 
-
-@router.post(
-    "/logout-all",
-    summary="Logout from all devices",
-    description="Revokes ALL refresh tokens for the current user.",
-)
+@router.post("/logout-all")
 async def logout_all_devices(
     response: Response,
     db: asyncpg.Connection = Depends(get_db),
     current_user: TokenData = Depends(get_current_user),
 ):
-    """
-    POST /api/v1/auth/logout-all
-
-    Requires: Authorization: Bearer <access_token>
-    Returns: { message }
-    Clears Cookie: refresh_token
-    """
     service = AuthService(db)
     await service.logout_all_devices(current_user.user_id)
 
-    _clear_refresh_cookie(response)
-
-    return success_response(message="Logged out from all devices successfully.")
-
+    # ✅ Same fix
+    json_response = success_response(message="Logged out from all devices successfully.")
+    _clear_refresh_cookie(json_response)
+    return json_response
 
 @router.post(
     "/verify-email",

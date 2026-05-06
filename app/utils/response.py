@@ -9,24 +9,40 @@
 # ============================================================
 
 from fastapi.responses import JSONResponse
+from fastapi.encoders import jsonable_encoder
 from typing import Any
 
 
+# def success_response(
+#     data: Any = None,
+#     message: str = "Success",
+#     status_code: int = 200,
+#     meta: dict | None = None,
+# ) -> JSONResponse:
+#     """
+#     Standard success response.
+
+#     Args:
+#         data:        The response payload (dict, list, or None)
+#         message:     Human-readable success message
+#         status_code: HTTP status code (200, 201, etc.)
+#         meta:        Optional pagination or extra info
+#     """
+#     body: dict = {
+#         "success": True,
+#         "message": message,
+#         "data": data,
+#     }
+#     if meta:
+#         body["meta"] = meta
+
+#     return JSONResponse(content=body, status_code=status_code)
 def success_response(
     data: Any = None,
     message: str = "Success",
     status_code: int = 200,
     meta: dict | None = None,
 ) -> JSONResponse:
-    """
-    Standard success response.
-
-    Args:
-        data:        The response payload (dict, list, or None)
-        message:     Human-readable success message
-        status_code: HTTP status code (200, 201, etc.)
-        meta:        Optional pagination or extra info
-    """
     body: dict = {
         "success": True,
         "message": message,
@@ -35,8 +51,10 @@ def success_response(
     if meta:
         body["meta"] = meta
 
-    return JSONResponse(content=body, status_code=status_code)
-
+    return JSONResponse(
+        content=jsonable_encoder(body),
+        status_code=status_code
+    )
 
 def error_response(
     error_code: str,

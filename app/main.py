@@ -1,5 +1,14 @@
 # ============================================================
 # app/main.py
+#
+# FastAPI Application Entry Point
+#
+# Responsibilities:
+#   1. Create FastAPI app with metadata (used in Swagger docs)
+#   2. Lifespan: connect/disconnect DB pool on startup/shutdown
+#   3. Register middleware (CORS, request logging)
+#   4. Register global exception handler
+#   5. Register all module routers
 # ============================================================
 
 import logging
@@ -17,8 +26,10 @@ from app.utils.response import error_response
 
 # ── Module Routers ────────────────────────────────────────
 from app.modules.auth.router import router as auth_router
+from app.modules.users.router import router as users_router
+from app.modules.categories.router import router as categories_router
+from app.modules.products.router import router as products_router
 # Future modules — uncomment as you build them:
-# from app.modules.users.router import router as users_router
 # from app.modules.products.router import router as products_router
 # from app.modules.cart.router import router as cart_router
 # from app.modules.orders.router import router as orders_router
@@ -40,12 +51,12 @@ logger = logging.getLogger(__name__)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    
+    # STARTUP — runs before the app starts accepting requests
     logger.info(f"🚀 Starting {settings.APP_NAME} [{settings.APP_ENV}]")
     await create_pool()
     logger.info("✅ Application startup complete.")
     yield
-    
+    # SHUTDOWN — runs after the app stops accepting requests
     logger.info("🛑 Shutting down...")
     await close_pool()
     logger.info("✅ Application shutdown complete.")
@@ -56,21 +67,34 @@ app = FastAPI(
     title=f"{settings.APP_NAME} API",
     description="Production-grade E-Commerce REST API built with FastAPI + PostgreSQL.",
     version="1.0.0",
-    docs_url="/docs",           
-    redoc_url="/redoc",         
+    docs_url="/docs",           # Swagger UI
+    redoc_url="/redoc",         # ReDoc UI
     openapi_url="/openapi.json",
     lifespan=lifespan,
+    # In production, disable docs:
+    # docs_url=None if settings.APP_ENV == "production" else "/docs",
 )
+
+
+# ── CORS Middleware ───────────────────────────────────────
+# WHY allow_credentials=True?
+#   Needed for cookies (refresh token) to be sent cross-origin.
+#   REQUIRED when frontend is on a different origin (localhost:5173 vs localhost:8000).
+#   MUST be paired with specific origins — '*' doesn't work with credentials.
 
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.allowed_origins_list,
-    allow_credentials=True,             
+    allow_credentials=True,             # Required for HTTP-only cookies
     allow_methods=["*"],
     allow_headers=["*"],
-    expose_headers=["X-Request-ID"],    
+    expose_headers=["X-Request-ID"],    # Expose custom headers to frontend
 )
 
+
+# ── Request Logging Middleware ────────────────────────────
+# Logs every request with method, path, status, and duration.
+# Useful for debugging and performance monitoring.
 
 @app.middleware("http")
 async def request_logging_middleware(request: Request, call_next):
@@ -119,7 +143,7 @@ async def generic_exception_handler(request: Request, exc: Exception) -> JSONRes
     """
     logger.error(
         f"Unhandled exception on {request.method} {request.url.path}: {exc}",
-        exc_info=True,      
+        exc_info=True,      # Include full traceback in logs
     )
     if settings.DEBUG:
         # In development, return the actual error for debugging
@@ -143,11 +167,20 @@ async def generic_exception_handler(request: Request, exc: Exception) -> JSONRes
 #   - /v1 allows breaking changes in v2 without removing v1
 #   - Frontend can explicitly target the version it was built against
 
-app.include_router(auth_router, prefix=settings.API_V1_PREFIX)
-# app.include_router(users_router,    prefix=settings.API_V1_PREFIX)
+app.include_router(auth_router,  prefix=settings.API_V1_PREFIX)
+app.include_router(users_router,      prefix=settings.API_V1_PREFIX)
+app.include_router(categories_router, prefix=settings.API_V1_PREFIX)
+app.include_router(products_router,   prefix=settings.API_V1_PREFIX)
 # app.include_router(products_router, prefix=settings.API_V1_PREFIX)
 # app.include_router(cart_router,     prefix=settings.API_V1_PREFIX)
 # app.include_router(orders_router,   prefix=settings.API_V1_PREFIX)
+
+
+# ── Health Check ─────────────────────────────────────────
+# WHY a health check endpoint?
+#   - AWS Load Balancer / ECS uses this to know if the app is alive
+#   - Monitoring tools (UptimeRobot, etc.) ping this
+#   - Returns DB status so you know the full stack is healthy
 
 @app.get("/health", tags=["System"])
 async def health_check():
