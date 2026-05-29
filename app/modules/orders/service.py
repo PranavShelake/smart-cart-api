@@ -86,7 +86,7 @@ class OrdersService:
         11. Clear cart
         12. Return full order
         """
-        async with self.db.transaction():
+        async with self.repo.db.transaction():
 
             # Step 1: Cart validation
             cart_items = await self.repo.get_cart_items_for_checkout(user_id)

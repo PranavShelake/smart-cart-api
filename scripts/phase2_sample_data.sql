@@ -1,3 +1,4 @@
+-- scripts/phase2_sample_data.sql
 -- ============================================================
 -- scripts/phase2_sample_data.sql
 -- Seed 3 products with variants + images for testing Phase 2

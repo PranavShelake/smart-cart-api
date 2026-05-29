@@ -1,3 +1,4 @@
+-- scripts/verify_schema.sql
 -- ============================================================================================================
 -- FILE: scripts/verify_schema.sql
 -- PURPOSE: Run this ANYTIME to get a full health check of your database

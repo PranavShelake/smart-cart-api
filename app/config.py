@@ -26,6 +26,11 @@ class Settings(BaseSettings):
 
     # ── CORS ─────────────────────────────────────────────
     ALLOWED_ORIGINS: str = "http://localhost:5173"
+    
+    # ── Razorpay ─────────────────────────────────────────────
+    RAZORPAY_KEY_ID: str = ""
+    RAZORPAY_KEY_SECRET: str = ""
+    RAZORPAY_WEBHOOK_SECRET: str = ""
 
     # ── Cookie ───────────────────────────────────────────
     COOKIE_SECURE: bool = False

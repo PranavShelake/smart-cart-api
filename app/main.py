@@ -33,6 +33,7 @@ from app.modules.cart.router import router as cart_router
 from app.modules.orders.router import router as orders_router
 from app.modules.reviews.router import router as reviews_router
 from app.modules.returns.router import router as returns_router
+from app.modules.payments.router import router as payments_router
 
 # ── Logging Setup ─────────────────────────────────────────
 logging.basicConfig(
@@ -175,6 +176,7 @@ app.include_router(cart_router,     prefix=settings.API_V1_PREFIX)
 app.include_router(orders_router,   prefix=settings.API_V1_PREFIX)
 app.include_router(returns_router,   prefix=settings.API_V1_PREFIX)
 app.include_router(reviews_router,   prefix=settings.API_V1_PREFIX)
+app.include_router(payments_router, prefix=settings.API_V1_PREFIX)
 
 
 # ── Health Check ─────────────────────────────────────────

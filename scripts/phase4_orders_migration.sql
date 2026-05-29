@@ -1,3 +1,4 @@
+-- scripts/phase4_orders_migration.sql
 -- ============================================================
 -- scripts/phase4_orders_migration.sql
 -- Adds order number generator function + useful order views
@@ -16,7 +17,7 @@ DECLARE
     v_seq    INTEGER;
 BEGIN
     SELECT COALESCE(MAX(
-        NULLIF(REGEXP_REPLACE(order_number, '[^0-9]', '', 'g'), '')::INTEGER
+        SPLIT_PART(order_number, '-', 3)::INTEGER
     ), 0) + 1
     INTO v_seq
     FROM orders

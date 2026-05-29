@@ -1,3 +1,4 @@
+-- scripts/02_seed_reference_data.sql
 -- ============================================================================================================
 -- FILE: scripts/02_seed_reference_data.sql
 -- PURPOSE: Seed all static / reference tables required before any module can function

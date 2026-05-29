@@ -1,3 +1,4 @@
+-- scripts/phase1_auth_migration.sql
 -- ============================================================================================================
 -- FILE: scripts/phase1_auth_migration.sql
 -- PURPOSE: Add tables required by the Auth Module that are NOT in the base schema
