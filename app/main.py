@@ -86,6 +86,7 @@ app = FastAPI(
 app.add_middleware(
     CORSMiddleware,
     allow_origins=settings.allowed_origins_list,
+    allow_origin_regex=settings.allow_origin_regex,
     allow_credentials=True,             # Required for HTTP-only cookies
     allow_methods=["*"],
     allow_headers=["*"],

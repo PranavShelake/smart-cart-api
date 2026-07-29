@@ -31,9 +31,9 @@ CREATE TABLE IF NOT EXISTS refresh_tokens (
     device_info     VARCHAR(255),                  -- Optional: "Chrome on Windows" for session mgmt
     ip_address      VARCHAR(45),                   -- IPv4 (15) or IPv6 (45). For audit trail.
     is_revoked      BOOLEAN DEFAULT FALSE,
-    expires_at      TIMESTAMP NOT NULL,
-    created_at      TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-    last_used_at    TIMESTAMP                      -- Updated on each refresh — useful for "active sessions"
+    expires_at      TIMESTAMPTZ NOT NULL,
+    created_at      TIMESTAMPTZ DEFAULT CURRENT_TIMESTAMP,
+    last_used_at    TIMESTAMPTZ                    -- Updated on each refresh — useful for "active sessions"
 );
 
 -- Indexes: We query by token_hash on every refresh request (hot path)
@@ -158,7 +158,7 @@ BEGIN
         u.phone,
         u.is_active,
         u.soft_delete,
-        ARRAY_AGG(r.name) AS roles
+        ARRAY_AGG(r.name::TEXT) AS roles
     FROM users u
     LEFT JOIN user_role ur ON ur.user_id = u.id AND ur.is_active = TRUE
     LEFT JOIN roles r ON r.id = ur.role_id AND r.is_active = TRUE

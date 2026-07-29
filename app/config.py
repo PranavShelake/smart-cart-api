@@ -25,7 +25,7 @@ class Settings(BaseSettings):
     REFRESH_TOKEN_EXPIRE_DAYS: int = 7
 
     # ── CORS ─────────────────────────────────────────────
-    ALLOWED_ORIGINS: str = "http://localhost:5173"
+    ALLOWED_ORIGINS: str = "http://localhost:5173,http://127.0.0.1:5173,http://localhost:3000,http://127.0.0.1:3000"
     
     # ── Razorpay ─────────────────────────────────────────────
     RAZORPAY_KEY_ID: str = ""
@@ -43,7 +43,19 @@ class Settings(BaseSettings):
     # Parsed property — split comma-separated ALLOWED_ORIGINS into a list
     @property
     def allowed_origins_list(self) -> list[str]:
-        return [origin.strip() for origin in self.ALLOWED_ORIGINS.split(",")]
+        origins = [origin.strip() for origin in self.ALLOWED_ORIGINS.split(",") if origin.strip()]
+        if not origins:
+            origins = [
+                "http://localhost:5173",
+                "http://127.0.0.1:5173",
+                "http://localhost:3000",
+                "http://127.0.0.1:3000",
+            ]
+        return origins
+
+    @property
+    def allow_origin_regex(self) -> str:
+        return r"^https?://(localhost|127\.0\.0\.1)(:\d+)?$"
 
     model_config = SettingsConfigDict(
         env_file=".env",
