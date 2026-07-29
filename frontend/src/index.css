@@ -1,0 +1,149 @@
+/* src/index.css */
+/* ─────────────────────────────────────────────────────────────
+   Smart Cart – Global Styles
+   All color/spacing values are driven by Tailwind (tokens.ts).
+   This file only handles:
+     1. Google Fonts imports
+     2. CSS custom properties for values Tailwind can't cover
+        (e.g. gradient borders, glass effects for complex use-cases)
+     3. Base resets
+     4. Reusable utility classes that require complex CSS
+        (not achievable with Tailwind utilities alone)
+   ───────────────────────────────────────────────────────────── */
+
+@import url("https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=Inter:wght@400;500;600&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&display=swap");
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── CSS Custom Properties ───────────────────────────────── */
+:root {
+  /* Glassmorphism reusable values */
+  --glass-bg-card:     rgba(30, 41, 59, 0.70);
+  --glass-bg-elevated: rgba(51, 65, 85, 0.80);
+  --glass-bg-nav:      rgba(11, 19, 38, 0.80);
+  --glass-blur:        20px;
+  --glass-blur-lg:     40px;
+  --glass-border:      rgba(255, 255, 255, 0.10);
+  --glass-border-hi:   rgba(255, 255, 255, 0.18);
+
+  /* Gradient shortcuts */
+  --gradient-primary:   linear-gradient(135deg, #7c3aed 0%, #3b82f6 100%);
+  --gradient-purple-glow: radial-gradient(ellipse at top-left, rgba(139,92,246,0.15) 0%, transparent 70%);
+}
+
+/* ── Base resets ─────────────────────────────────────────── */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+@keyframes slideIn {
+  from { opacity: 0; transform: translateY(12px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+html {
+  /* Prevent font size inflation on mobile */
+  -webkit-text-size-adjust: 100%;
+}
+
+body {
+  margin: 0;
+  font-family: "Inter", sans-serif;
+  background-color: #0b1326;
+  color: #dae2fd;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Scrollbar styling ───────────────────────────────────── */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.12);
+  border-radius: 9999px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: rgba(139, 92, 246, 0.40);
+}
+
+/* ── Material Symbols ────────────────────────────────────── */
+.material-symbols-outlined {
+  font-family: "Material Symbols Outlined", sans-serif;
+  font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+  user-select: none;
+}
+
+/* ── Glassmorphism component class ──────────────────────── */
+/* Use this when Tailwind utilities are too verbose for glass effect */
+@layer components {
+  .glass-panel {
+    background: var(--glass-bg-card);
+    backdrop-filter: blur(var(--glass-blur));
+    -webkit-backdrop-filter: blur(var(--glass-blur));
+    border: 1px solid var(--glass-border);
+  }
+
+  .glass-panel-elevated {
+    background: var(--glass-bg-elevated);
+    backdrop-filter: blur(var(--glass-blur-lg));
+    -webkit-backdrop-filter: blur(var(--glass-blur-lg));
+    border: 1px solid var(--glass-border-hi);
+  }
+
+  .glass-nav {
+    background: var(--glass-bg-nav);
+    backdrop-filter: blur(24px);
+    -webkit-backdrop-filter: blur(24px);
+    border-bottom: 1px solid var(--glass-border);
+  }
+
+  /* Gradient border trick – wraps element with gradient border */
+  .gradient-border {
+    position: relative;
+    border: 1px solid transparent;
+    background-clip: padding-box;
+  }
+  .gradient-border::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    border-radius: inherit;
+    background: linear-gradient(
+      135deg,
+      rgba(255,255,255,0.18) 0%,
+      rgba(255,255,255,0.04) 100%
+    );
+    z-index: -1;
+  }
+
+  /* Primary CTA button gradient */
+  .btn-primary {
+    background: var(--gradient-primary);
+    color: #ffffff;
+    font-family: "Space Grotesk", sans-serif;
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    border: none;
+    cursor: pointer;
+    transition: box-shadow 0.2s ease, transform 0.15s ease;
+  }
+  .btn-primary:hover {
+    box-shadow: 0 0 20px rgba(139, 92, 246, 0.45);
+    transform: translateY(-1px);
+  }
+  .btn-primary:active {
+    transform: translateY(0);
+  }
+}
