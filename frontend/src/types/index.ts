@@ -349,3 +349,55 @@ export interface AddressCreatePayload {
 }
 
 export interface AddressUpdatePayload extends AddressCreatePayload {}
+
+// ── Reviews ───────────────────────────────────────────────────
+export interface ReviewListItem {
+  id:           number
+  product_id:   number
+  product_name: string
+  user_id:      number
+  user_name:    string
+  rating:       number
+  title:        string | null
+  body:         string | null
+  is_approved:  boolean
+  helpful_count: number
+  created_at:   string
+}
+
+// ── Returns ───────────────────────────────────────────────────
+export type ReturnStatus =
+  | 'PENDING' | 'APPROVED' | 'REJECTED' | 'COMPLETED'
+
+export interface ReturnItem {
+  id:            number
+  order_item_id: number
+  product_name:  string
+  quantity:      number
+}
+
+export interface ReturnListItem {
+  id:            number
+  return_number: string
+  order_id:      number
+  order_number:  string
+  status:        ReturnStatus
+  reason:        string | null
+  refund_amount: number | null
+  created_at:    string
+}
+
+export interface ReturnDetail extends ReturnListItem {
+  items: ReturnItem[]
+}
+
+export interface CreateReturnPayload {
+  order_id: number
+  reason:   string
+}
+
+export interface ProcessReturnPayload {
+  action:        'approve' | 'reject'
+  refund_amount?: number
+  notes?:        string
+}

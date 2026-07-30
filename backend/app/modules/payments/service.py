@@ -30,10 +30,14 @@ class PaymentsService:
 
     def __init__(self, db: asyncpg.Connection):
         self.repo = PaymentsRepository(db)
-        # Razorpay client — initialized with key_id + key_secret from .env
-        self.rp = razorpay.Client(
-            auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET)
-        )
+        self.rp = None
+
+        if settings.RAZORPAY_KEY_ID and settings.RAZORPAY_KEY_SECRET:
+            self.rp = razorpay.Client(
+                auth=(settings.RAZORPAY_KEY_ID, settings.RAZORPAY_KEY_SECRET)
+            )
+        else:
+            logger.warning("Razorpay credentials are not configured. Set RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET in backend/.env")
 
     async def initiate_payment(
         self, user_id: int, data: InitiatePaymentRequest
@@ -67,6 +71,11 @@ class PaymentsService:
 
         if await self.repo.payment_already_captured(data.order_id):
             raise ConflictException("Payment for this order is already captured.")
+
+        if not self.rp:
+            raise PaymentException(
+                "Razorpay is not configured yet. Add your test keys to backend/.env before trying again."
+            )
 
         # Razorpay requires amount in PAISE (1 INR = 100 paise)
         amount_paise = int(float(order["total_price"]) * 100)

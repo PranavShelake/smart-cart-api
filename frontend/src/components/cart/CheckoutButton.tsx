@@ -13,7 +13,7 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Loader2, ShieldCheck } from 'lucide-react'
-import { useAppDispatch, useAppSelector } from '../../store'
+import { useAppDispatch } from '../../store'
 import { useToast } from '../../store/slices/toastSlice'
 
 interface CheckoutButtonProps {

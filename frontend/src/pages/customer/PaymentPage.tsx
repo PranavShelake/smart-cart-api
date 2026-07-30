@@ -15,8 +15,6 @@ import {
 } from 'lucide-react'
 import { useAppDispatch } from '../../store'
 import { clearPayment } from '../../store/slices/paymentsSlice'
-import { useToast } from '../../store/slices/toastSlice'
-import { formatCurrency } from '../../utils/formatCurrency'
 import RazorpayCheckout from '../../components/payments/RazorpayCheckout'
 
 // ── Success screen ────────────────────────────────────────────

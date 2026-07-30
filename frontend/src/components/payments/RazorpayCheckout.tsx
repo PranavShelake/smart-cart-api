@@ -19,7 +19,6 @@ import {
 } from '../../store/slices/paymentsSlice'
 import { useToast } from '../../store/slices/toastSlice'
 import { useRazorpay } from '../../hooks/useRazorpay'
-import { formatCurrency } from '../../utils/formatCurrency'
 
 interface RazorpayCheckoutProps {
   orderId:     number
@@ -30,8 +29,6 @@ interface RazorpayCheckoutProps {
 
 export default function RazorpayCheckout({
   orderId,
-  orderNumber,
-  amount,
   onCancel,
 }: RazorpayCheckoutProps) {
   const dispatch   = useAppDispatch()
@@ -82,7 +79,6 @@ export default function RazorpayCheckout({
           toast.error('Payment cancelled.')
           onCancel()
         },
-        escape: false,
       },
 
       // ── Success handler ──────────────────────────────────
@@ -104,10 +100,6 @@ export default function RazorpayCheckout({
     }
 
     const rzp = new window.Razorpay(options)
-    rzp.on('payment.failed', () => {
-      dispatch(setCapturing(false))
-      toast.error('Payment failed. Please try again.')
-    })
     rzp.open()
   }, [razorpayOrder, dispatch, navigate, toast, onCancel, loadRazorpay])
 

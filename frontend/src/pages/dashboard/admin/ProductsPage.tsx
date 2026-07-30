@@ -782,7 +782,6 @@ export default function ProductsPage() {
                   </td>
                 </tr>
               ) : displayedProducts.map(product => {
-                const catName = categories.find(c => c.id === product.category_id)?.name ?? '—'
                 return (
                   <tr key={product.id}
                       className="hover:bg-surface-hover transition-colors">

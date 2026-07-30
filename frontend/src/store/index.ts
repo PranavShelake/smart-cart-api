@@ -10,6 +10,8 @@ import categoriesReducer from './slices/categoriesSlice'
 import cartReducer   from './slices/cartSlice'   
 import ordersReducer from './slices/ordersSlice'
 import paymentsReducer from './slices/paymentsSlice'
+import reviewsReducer from './slices/reviewsSlice.ts'
+import returnsReducer from './slices/returnsSlice' 
 
 export const store = configureStore({
   reducer: {
@@ -20,6 +22,8 @@ export const store = configureStore({
     cart:       cartReducer,
     orders:     ordersReducer, 
     payments:   paymentsReducer,
+    reviews:    reviewsReducer,   // ← ADD
+    returns:    returnsReducer,
   },
 });
 

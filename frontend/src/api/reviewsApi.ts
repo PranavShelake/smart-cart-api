@@ -6,8 +6,10 @@ export const reviewsApi = {
   getPending: (params: { page?: number; per_page?: number }) =>
     apiClient.get<ApiResponse<ReviewListItem[]>>('/admin/reviews/pending', { params }),
 
-  getAll: (params: { page?: number; product_id?: number }) =>
-    apiClient.get<ApiResponse<ReviewListItem[]>>('/products/reviews/all', { params }),
+  getForProduct: (productId: number, params: { page?: number }) =>
+    apiClient.get<ApiResponse<{ reviews: ReviewListItem[] }>>(
+      `/products/${productId}/reviews`, { params }
+    ),
 
   approve: (id: number) =>
     apiClient.patch<ApiResponse<null>>(`/admin/reviews/${id}/approve`, {}),

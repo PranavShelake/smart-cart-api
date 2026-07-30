@@ -8,6 +8,7 @@ import {
   sessionExpired,
   selectIsAuthenticated,
   selectIsBootstrapped,
+  selectPrimaryRole,
   selectRoleDashboardPath,
 } from "./store/slices/authSlice";
 
@@ -23,6 +24,9 @@ import ToastContainer from "./components/ui/Toast";
 import ShopPage           from './pages/customer/ShopPage'
 import ProductDetailPage  from './pages/customer/ProductDetailPage'
 import ProfilePage from './pages/customer/ProfilePage'
+import ReviewsPage        from './pages/admin/ReviewsPage'
+import AdminReturnsPage   from './pages/admin/ReturnsPage'
+import CustomerReturnsPage from './pages/customer/CustomerReturnsPage'
 
 // ── Placeholder ───────────────────────────────────────────────
 function ComingSoon({ label }: { label: string }) {
@@ -78,7 +82,20 @@ function GuestRoute({ children }: { children: React.ReactNode }) {
   if (isAuthenticated) return <Navigate to={dashboardPath} replace />;
   return <>{children}</>;
 }
-// Add this component in App.tsx (above Root)
+
+function AdminRoute({ children }: { children: React.ReactNode }) {
+  const isAuthenticated = useAppSelector(selectIsAuthenticated);
+  const isBootstrapped  = useAppSelector(selectIsBootstrapped);
+  const role            = useAppSelector(selectPrimaryRole);
+
+  if (!isBootstrapped) return <BootstrapSpinner />;
+  if (!isAuthenticated) return <Navigate to="/login" replace />;
+  if (role !== 'ADMIN') {
+    return <Navigate to={role === 'SELLER' ? '/seller/dashboard' : '/shop'} replace />;
+  }
+  return <>{children}</>;
+}
+
 function RoleRedirect() {
   const dashboardPath = useAppSelector(selectRoleDashboardPath)
   return <Navigate to={dashboardPath} replace />
@@ -121,16 +138,16 @@ function Root() {
           <Route index element={<RoleRedirect />} />
 
           {/* ADMIN */}
-          <Route path="/admin/dashboard"  element={<DashboardPage />} />
-          <Route path="/admin/products"   element={<ProductsPage />} />
-          <Route path="/admin/categories" element={<CategoriesPage />} />
-          <Route path="/admin/orders"     element={<AdminOrdersPage />} />       
-          <Route path="/admin/customers"  element={<ComingSoon label="Customers" />} />
-          <Route path="/admin/inventory"  element={<ComingSoon label="Inventory" />} />
-          <Route path="/admin/coupons"    element={<ComingSoon label="Coupons" />} />
-          <Route path="/admin/reviews"    element={<ComingSoon label="Reviews" />} />
-          <Route path="/admin/returns"    element={<ComingSoon label="Returns" />} />
-          <Route path="/admin/analytics"  element={<ComingSoon label="Analytics" />} />
+          <Route path="/admin/dashboard"  element={<AdminRoute><DashboardPage /></AdminRoute>} />
+          <Route path="/admin/products"   element={<AdminRoute><ProductsPage /></AdminRoute>} />
+          <Route path="/admin/categories" element={<AdminRoute><CategoriesPage /></AdminRoute>} />
+          <Route path="/admin/orders"     element={<AdminRoute><AdminOrdersPage /></AdminRoute>} />
+          <Route path="/admin/reviews"  element={<AdminRoute><ReviewsPage /></AdminRoute>} />
+          <Route path="/admin/returns"  element={<AdminRoute><AdminReturnsPage /></AdminRoute>} />
+          <Route path="/admin/customers"  element={<AdminRoute><ComingSoon label="Customers" /></AdminRoute>} />
+          <Route path="/admin/inventory"  element={<AdminRoute><ComingSoon label="Inventory" /></AdminRoute>} />
+          <Route path="/admin/coupons"    element={<AdminRoute><ComingSoon label="Coupons" /></AdminRoute>} />
+          <Route path="/admin/analytics"  element={<AdminRoute><ComingSoon label="Analytics" /></AdminRoute>} />
 
           {/* SELLER */}
           <Route path="/seller/dashboard" element={<ComingSoon label="Seller Dashboard" />} />
@@ -144,6 +161,7 @@ function Root() {
           <Route path="/cart"             element={<CartPage />} />               
           <Route path="/orders"           element={<CustomerOrdersPage />} />     
           <Route path="/orders/:id"       element={<CustomerOrdersPage />} />     
+          <Route path="/returns"          element={<CustomerReturnsPage />} />
           <Route path="/wishlist"         element={<ComingSoon label="Wishlist" />} />
 
           {/* Shared */}

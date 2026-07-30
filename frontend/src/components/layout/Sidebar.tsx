@@ -3,7 +3,7 @@ import {
   LayoutDashboard, TrendingUp, ShoppingCart, Package,
   Users, BarChart3, Settings, LogOut, Tag, Boxes,
   Ticket, Star, RotateCcw, Store, ClipboardList,
-  Heart, User, ShoppingBag,
+  Heart, User, ShoppingBag,MessageSquare ,
 } from 'lucide-react'
 import { useAppDispatch, useAppSelector } from '../../store'
 import { logout, selectPrimaryRole } from '../../store/slices/authSlice'
@@ -26,7 +26,7 @@ const ADMIN_NAV: NavItem[] = [
   { label: 'Customers',  path: '/admin/customers',  icon: <Users           size={18} /> },
   { label: 'Inventory',  path: '/admin/inventory',  icon: <Boxes           size={18} /> },
   { label: 'Coupons',    path: '/admin/coupons',    icon: <Ticket          size={18} /> },
-  { label: 'Reviews',    path: '/admin/reviews',    icon: <Star            size={18} /> },
+  { label: 'Reviews',    path: '/admin/reviews',    icon: <MessageSquare   size={18} /> },
   { label: 'Returns',    path: '/admin/returns',    icon: <RotateCcw       size={18} /> },
   { label: 'Analytics',  path: '/admin/analytics',  icon: <BarChart3       size={18} /> },
 ]
@@ -42,6 +42,7 @@ const CUSTOMER_NAV: NavItem[] = [
   { label: 'Shop',      path: '/shop',      icon: <Store         size={18} /> },
   { label: 'Cart',      path: '/cart',      icon: <ShoppingBag   size={18} />, badge: 'cart' },
   { label: 'My Orders', path: '/orders',    icon: <ClipboardList size={18} /> },
+  { label: 'Returns',   path: '/returns',   icon: <RotateCcw     size={18} /> },
   { label: 'Wishlist',  path: '/wishlist',  icon: <Heart         size={18} /> },
   { label: 'Profile',   path: '/profile',   icon: <User          size={18} /> },
 ]

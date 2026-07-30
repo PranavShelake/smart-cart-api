@@ -178,8 +178,20 @@ const handleSubmit = async (e: React.FormEvent) => {
       })
     );
  
+    const role = result.user.roles?.includes('ADMIN')
+      ? 'ADMIN'
+      : result.user.roles?.includes('SELLER')
+        ? 'SELLER'
+        : 'CUSTOMER';
+
+    const dashboardPath = role === 'ADMIN'
+      ? '/admin/dashboard'
+      : role === 'SELLER'
+        ? '/seller/dashboard'
+        : '/shop';
+
     toast.success("Welcome back!");
-    navigate("/admin/dashboard", { replace: true }); // ← updated path
+    navigate(dashboardPath, { replace: true });
  
   } catch (err: any) {
     const msg =

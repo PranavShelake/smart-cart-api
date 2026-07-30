@@ -7,17 +7,17 @@ import type {
 
 export const returnsApi = {
   // Customer
-  getMyReturns: (params: { page?: number; status?: string }) =>
+  create: (payload: CreateReturnPayload) =>
+    apiClient.post<ApiResponse<ReturnDetail>>('/returns', payload),
+
+  getMine: (params: { page?: number; status?: string }) =>
     apiClient.get<ApiResponse<ReturnListItem[]>>('/returns', { params }),
 
   getById: (id: number) =>
     apiClient.get<ApiResponse<ReturnDetail>>(`/returns/${id}`),
 
-  create: (payload: CreateReturnPayload) =>
-    apiClient.post<ApiResponse<ReturnDetail>>('/returns', payload),
-
   // Admin
-  getAllReturns: (params: { page?: number; status?: string }) =>
+  getAll: (params: { page?: number; status?: string }) =>
     apiClient.get<ApiResponse<ReturnListItem[]>>('/returns/admin/all', { params }),
 
   process: (id: number, payload: ProcessReturnPayload) =>

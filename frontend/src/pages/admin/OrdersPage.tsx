@@ -17,7 +17,6 @@ import {
   selectOrderFilters,
   selectSelectedOrder,
   selectIsLoadingDetail,
-  setSelectedOrder,
   clearSelectedOrder,
 } from '../../store/slices/ordersSlice'
 import { useToast } from '../../store/slices/toastSlice'
